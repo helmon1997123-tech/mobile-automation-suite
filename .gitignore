@@ -1,0 +1,8 @@
+node_modules/
+dist/
+allure-results/
+allure-report/
+.env
+apps/*.apk
+apps/*.ipa
+.idea/
