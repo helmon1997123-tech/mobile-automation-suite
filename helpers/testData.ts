@@ -30,9 +30,3 @@ export const ORDER_DATA = {
   lastName: 'User',
   postalCode: '12345',
 };
-
-export const TIMEOUTS = {
-  short: 5000,
-  medium: 10000,
-  long: 20000,
-};

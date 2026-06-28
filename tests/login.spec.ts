@@ -7,10 +7,20 @@ describe('Авторизация', () => {
   let loginScreen: LoginScreen;
   let catalogScreen: CatalogScreen;
 
-  beforeEach(async () => {
+  before(async () => {
     loginScreen = new LoginScreen();
     catalogScreen = new CatalogScreen();
-    await driver.reset();
+  });
+
+  beforeEach(async () => {
+    try {
+      const isLoginVisible = await loginScreen.isLoginScreenDisplayed();
+      if (!isLoginVisible) {
+        await loginScreen.logout();
+      }
+    } catch {
+      // уже на экране логина
+    }
   });
 
   // Happy path
@@ -42,6 +52,6 @@ describe('Авторизация', () => {
   it('Логин с неверным паролем — ошибка', async () => {
     await loginScreen.login(USERS.STANDARD.username, 'wrong_password');
     const errorMessage = await loginScreen.getErrorMessage();
-    expect(errorMessage).to.include('Username and password do not match');
+    expect(errorMessage).to.include('do not match any user in this service');
   });
 });

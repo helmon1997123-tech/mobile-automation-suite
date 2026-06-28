@@ -6,3 +6,4 @@ allure-report/
 apps/*.apk
 apps/*.ipa
 .idea/
+test-results/

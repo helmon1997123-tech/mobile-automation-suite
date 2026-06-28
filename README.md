@@ -11,33 +11,47 @@
 | Инструмент | Назначение |
 |---|---|
 | TypeScript | Язык разработки |
-| WebDriverIO | Фреймворк автоматизации |
-| Appium | Мобильная автоматизация (Android) |
+| WebDriverIO 8 | Фреймворк автоматизации |
+| Appium 2 | Мобильная автоматизация (Android) |
 | UiAutomator2 | Android драйвер |
 | Allure | Отчёты о прогоне тестов |
 | Chai | Assertions |
 
 ## Структура проекта
 
-```
 mobile-automation-suite/
+
 ├── tests/
+
 │   ├── login.spec.ts      # Авторизация (happy path + negative)
+
 │   ├── catalog.spec.ts    # Каталог товаров и сортировка
+
 │   └── purchase.spec.ts   # Корзина и оформление заказа
+
 ├── screens/               # Screen Object Model
-│   ├── BaseScreen.ts      # Базовые методы (tap, swipe, scroll)
+
+│   ├── BaseScreen.ts      # Базовые методы (tap, swipe, scroll, logout)
+
 │   ├── LoginScreen.ts
+
 │   ├── CatalogScreen.ts
+
 │   ├── CartScreen.ts
+
 │   └── CheckoutScreen.ts
+
 ├── helpers/
+
 │   └── testData.ts        # Тестовые данные и константы
+
 ├── apps/                  # APK файлы (не коммитятся)
+
 ├── wdio.conf.ts           # Конфиг для Android
+
 ├── wdio.shared.conf.ts    # Общий конфиг
-└── .env.example
-```
+
+└── .env.example           # Пример переменных окружения
 
 ## Покрытие тестами
 
@@ -58,7 +72,7 @@ mobile-automation-suite/
 | Добавление нескольких товаров | Happy path |
 | Открытие карточки товара | Happy path |
 | Сортировка A-Z, Z-A | Happy path |
-| Сортировка по цене (оба направления) | Happy path / Negative |
+| Сортировка по цене (оба направления) | Negative |
 
 ### Корзина и оформление
 | Сценарий | Тип |
@@ -77,8 +91,9 @@ mobile-automation-suite/
 
 - Node.js 20+
 - Android SDK
-- Appium 2.x
-- Android эмулятор или реальное устройство
+- Appium 2.x (`npm install -g appium`)
+- UiAutomator2 драйвер (`appium driver install uiautomator2`)
+- Android эмулятор API 33 или реальное устройство Android 13+
 
 ### Установка
 
@@ -88,18 +103,36 @@ cd mobile-automation-suite
 npm install
 ```
 
-### Настройка
-
-1. Скачай APK: [Sauce Labs Sample App](https://github.com/saucelabs/sample-app-mobile/releases)
-2. Положи в папку `apps/`
-3. Запусти Appium: `appium`
-4. Запусти эмулятор или подключи устройство
-
-### Запуск тестов
+### Настройка окружения
 
 ```bash
-# Все тесты
-npm test
+cp .env.example .env
+```
+
+Отредактируй `.env`:
+
+DEVICE_NAME=emulator-5554        # или серийный номер реального устройства (adb devices)
+
+PLATFORM_VERSION=13.0            # версия Android
+
+APP_PATH=./apps/Android.SauceLabs.Mobile.Sample.app.apk
+
+### Скачай APK
+
+```bash
+# Sauce Labs Sample App v2.7.1
+wget https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk \
+  -O apps/Android.SauceLabs.Mobile.Sample.app.apk
+```
+
+### Запуск
+
+```bash
+# Запусти Appium в отдельном терминале
+appium
+
+# Все тесты с отчётом
+npm run test:all
 
 # Только авторизация
 npm run test:login

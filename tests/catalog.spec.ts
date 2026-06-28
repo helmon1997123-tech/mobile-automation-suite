@@ -22,24 +22,17 @@ describe('Каталог товаров', () => {
 
   it('Добавление первого товара в корзину', async () => {
     await catalogScreen.addFirstProductToCart();
-    const count = await catalogScreen.getCartItemCount();
-    expect(count).to.equal('1');
+    const hasRemove = await catalogScreen.hasRemoveButton(0);
+    expect(hasRemove).to.be.true;
   });
 
   it('Добавление нескольких товаров в корзину', async () => {
-    await driver.reset();
-    await loginScreen.login(USERS.STANDARD.username, USERS.STANDARD.password);
-    await catalogScreen.isCatalogDisplayed();
-    await catalogScreen.addProductToCart(0);
-    await catalogScreen.addProductToCart(1);
-    const count = await catalogScreen.getCartItemCount();
-    expect(count).to.equal('2');
+    await catalogScreen.addFirstProductToCart();
+    const count = (await $$('~test-REMOVE')).length;
+    expect(count).to.equal(2);
   });
 
   it('Сортировка по цене — от дешёвых к дорогим', async () => {
-    await driver.reset();
-    await loginScreen.login(USERS.STANDARD.username, USERS.STANDARD.password);
-    await catalogScreen.isCatalogDisplayed();
     await catalogScreen.sortBy('lohi');
     const isDisplayed = await catalogScreen.isCatalogDisplayed();
     expect(isDisplayed).to.be.true;
@@ -52,19 +45,15 @@ describe('Каталог товаров', () => {
   });
 
   it('Открытие карточки товара', async () => {
-    await driver.reset();
-    await loginScreen.login(USERS.STANDARD.username, USERS.STANDARD.password);
-    await catalogScreen.isCatalogDisplayed();
     await catalogScreen.openProduct(PRODUCTS.BACKPACK);
     const isDisplayed = await catalogScreen.isProductDetailDisplayed();
     expect(isDisplayed).to.be.true;
+    await driver.back();
+    await catalogScreen.isCatalogDisplayed();
   });
 
   // Negative tests
   it('Сортировка по цене — от дорогих к дешёвым', async () => {
-    await driver.reset();
-    await loginScreen.login(USERS.STANDARD.username, USERS.STANDARD.password);
-    await catalogScreen.isCatalogDisplayed();
     await catalogScreen.sortBy('hilo');
     const isDisplayed = await catalogScreen.isCatalogDisplayed();
     expect(isDisplayed).to.be.true;

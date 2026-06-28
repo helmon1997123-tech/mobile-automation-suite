@@ -1,33 +1,24 @@
 import { BaseScreen } from './BaseScreen';
 
 export class LoginScreen extends BaseScreen {
-  // Selectors
-  private get usernameInput() {
-    return $('~test-Username');
-  }
-  private get passwordInput() {
-    return $('~test-Password');
-  }
-  private get loginButton() {
-    return $('~test-LOGIN');
-  }
-  private get errorMessage() {
-    return $('~test-Error message');
-  }
+  private readonly usernameSelector = '~test-Username';
+  private readonly passwordSelector = '~test-Password';
+  private readonly loginButtonSelector = '~test-LOGIN';
+  private readonly errorSelector = "//android.widget.TextView[contains(@text, 'required') or contains(@text, 'match') or contains(@text, 'locked')]";
 
   async login(username: string, password: string): Promise<void> {
-    await (await this.usernameInput).waitForDisplayed({ timeout: 15000 });
-    await (await this.usernameInput).setValue(username);
-    await (await this.passwordInput).setValue(password);
-    await (await this.loginButton).click();
+    await this.waitForDisplayed(this.usernameSelector, 15000);
+    await this.setText(this.usernameSelector, username);
+    await this.setText(this.passwordSelector, password);
+    await this.tap(this.loginButtonSelector);
   }
 
   async getErrorMessage(): Promise<string> {
-    await (await this.errorMessage).waitForDisplayed({ timeout: 5000 });
-    return (await this.errorMessage).getText();
+    await this.waitForDisplayed(this.errorSelector, 5000);
+    return this.getText(this.errorSelector);
   }
 
   async isLoginScreenDisplayed(): Promise<boolean> {
-    return (await this.loginButton).isDisplayed();
+    return this.isDisplayed(this.loginButtonSelector);
   }
 }

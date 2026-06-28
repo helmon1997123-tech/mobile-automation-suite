@@ -9,7 +9,8 @@
     "outDir": "./dist",
     "rootDir": "./",
     "resolveJsonModule": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "types": ["node", "@wdio/globals/types", "expect-webdriverio", "mocha"]
   },
   "include": ["**/*.ts"],
   "exclude": ["node_modules", "dist"]

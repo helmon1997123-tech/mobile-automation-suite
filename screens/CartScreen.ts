@@ -1,23 +1,16 @@
 import { BaseScreen } from './BaseScreen';
 
 export class CartScreen extends BaseScreen {
-  private get checkoutButton() {
-    return $('~test-CHECKOUT');
-  }
-  private get continueShoppingButton() {
-    return $('~test-CONTINUE SHOPPING');
-  }
-  private get cartItems() {
-    return $$('~test-Item');
-  }
+  private readonly checkoutSelector = '~test-CHECKOUT';
+  private readonly continueShoppingSelector = '~test-CONTINUE SHOPPING';
 
   async isCartDisplayed(): Promise<boolean> {
-    await (await this.checkoutButton).waitForDisplayed({ timeout: 10000 });
-    return (await this.checkoutButton).isDisplayed();
+    await this.waitForDisplayed(this.checkoutSelector, 10000);
+    return this.isDisplayed(this.checkoutSelector);
   }
 
   async getCartItemCount(): Promise<number> {
-    const items = await this.cartItems;
+    const items = await $$('~test-REMOVE');
     return items.length;
   }
 
@@ -27,15 +20,11 @@ export class CartScreen extends BaseScreen {
   }
 
   async proceedToCheckout(): Promise<void> {
-    await (await this.checkoutButton).click();
+    const checkout = await $('android=new UiScrollable(new UiSelector().scrollable(true)).scrollIntoView(new UiSelector().description("test-CHECKOUT"))');
+    await checkout.click();
   }
 
   async continueShopping(): Promise<void> {
-    await (await this.continueShoppingButton).click();
-  }
-
-  async getItemNames(): Promise<string[]> {
-    const titleElements = await $$('~test-Item title');
-    return Promise.all(titleElements.map((el) => el.getText()));
+    await this.tap(this.continueShoppingSelector);
   }
 }

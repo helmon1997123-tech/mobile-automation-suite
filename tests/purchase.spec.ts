@@ -10,18 +10,49 @@ describe('Корзина и оформление заказа', () => {
   let catalogScreen: CatalogScreen;
   let cartScreen: CartScreen;
   let checkoutScreen: CheckoutScreen;
+  let skipAfterEach = false;
 
   before(async () => {
     loginScreen = new LoginScreen();
     catalogScreen = new CatalogScreen();
     cartScreen = new CartScreen();
     checkoutScreen = new CheckoutScreen();
-  });
-
-  beforeEach(async () => {
-    await driver.reset();
     await loginScreen.login(USERS.STANDARD.username, USERS.STANDARD.password);
     await catalogScreen.isCatalogDisplayed();
+  });
+
+  afterEach(async () => {
+    if (skipAfterEach) return;
+
+    try {
+      const backHome = await $('~test-BACK HOME');
+      if (await backHome.isDisplayed()) {
+        await backHome.click();
+        await catalogScreen.isCatalogDisplayed();
+        return;
+      }
+    } catch {}
+
+    try {
+      const isOnCatalog = await $('~test-PRODUCTS').isDisplayed();
+      if (!isOnCatalog) {
+        await catalogScreen.goToCart();
+        let removeButtons = await $$('~test-REMOVE');
+        while (removeButtons.length > 0) {
+          await removeButtons[0].click();
+          await browser.pause(500);
+          removeButtons = await $$('~test-REMOVE');
+        }
+        await cartScreen.continueShopping();
+      }
+      await catalogScreen.isCatalogDisplayed();
+    } catch {
+      try {
+        await driver.back();
+        await driver.back();
+        await catalogScreen.isCatalogDisplayed();
+      } catch {}
+    }
   });
 
   // Happy path
@@ -37,9 +68,9 @@ describe('Корзина и оформление заказа', () => {
 
     await cartScreen.proceedToCheckout();
     await checkoutScreen.fillShippingInfo(
-      ORDER_DATA.firstName,
-      ORDER_DATA.lastName,
-      ORDER_DATA.postalCode,
+        ORDER_DATA.firstName,
+        ORDER_DATA.lastName,
+        ORDER_DATA.postalCode,
     );
 
     const total = await checkoutScreen.getSummaryTotal();
@@ -64,8 +95,8 @@ describe('Корзина и оформление заказа', () => {
   });
 
   it('Два товара → корзина → оформление', async () => {
-    await catalogScreen.addProductToCart(0);
-    await catalogScreen.addProductToCart(1);
+    await catalogScreen.addFirstProductToCart();
+    await catalogScreen.addFirstProductToCart();
     await catalogScreen.goToCart();
 
     const itemCount = await cartScreen.getCartItemCount();
@@ -73,9 +104,9 @@ describe('Корзина и оформление заказа', () => {
 
     await cartScreen.proceedToCheckout();
     await checkoutScreen.fillShippingInfo(
-      ORDER_DATA.firstName,
-      ORDER_DATA.lastName,
-      ORDER_DATA.postalCode,
+        ORDER_DATA.firstName,
+        ORDER_DATA.lastName,
+        ORDER_DATA.postalCode,
     );
     await checkoutScreen.finishOrder();
 
@@ -91,30 +122,34 @@ describe('Корзина и оформление заказа', () => {
   });
 
   // Negative tests
-  it('Оформление заказа с пустым именем — ошибка', async () => {
-    await catalogScreen.addFirstProductToCart();
-    await catalogScreen.goToCart();
-    await cartScreen.proceedToCheckout();
-    await checkoutScreen.fillShippingInfo('', ORDER_DATA.lastName, ORDER_DATA.postalCode);
-    const errorMessage = await checkoutScreen.getErrorMessage();
-    expect(errorMessage).to.include('First Name is required');
-  });
+  describe('Негативные тесты оформления заказа', () => {
+    before(async () => {
+      skipAfterEach = true;
+      await catalogScreen.addFirstProductToCart();
+      await catalogScreen.goToCart();
+      await cartScreen.proceedToCheckout();
+    });
 
-  it('Оформление заказа с пустой фамилией — ошибка', async () => {
-    await catalogScreen.addFirstProductToCart();
-    await catalogScreen.goToCart();
-    await cartScreen.proceedToCheckout();
-    await checkoutScreen.fillShippingInfo(ORDER_DATA.firstName, '', ORDER_DATA.postalCode);
-    const errorMessage = await checkoutScreen.getErrorMessage();
-    expect(errorMessage).to.include('Last Name is required');
-  });
+    after(async () => {
+      skipAfterEach = false;
+    });
 
-  it('Оформление заказа с пустым индексом — ошибка', async () => {
-    await catalogScreen.addFirstProductToCart();
-    await catalogScreen.goToCart();
-    await cartScreen.proceedToCheckout();
-    await checkoutScreen.fillShippingInfo(ORDER_DATA.firstName, ORDER_DATA.lastName, '');
-    const errorMessage = await checkoutScreen.getErrorMessage();
-    expect(errorMessage).to.include('Postal Code is required');
+    it('Пустое имя — ошибка', async () => {
+      await checkoutScreen.fillShippingInfo('', ORDER_DATA.lastName, ORDER_DATA.postalCode);
+      const errorMessage = await checkoutScreen.getErrorMessage();
+      expect(errorMessage).to.include('First Name is required');
+    });
+
+    it('Пустая фамилия — ошибка', async () => {
+      await checkoutScreen.fillShippingInfo(ORDER_DATA.firstName, '', ORDER_DATA.postalCode);
+      const errorMessage = await checkoutScreen.getErrorMessage();
+      expect(errorMessage).to.include('Last Name is required');
+    });
+
+    it('Пустой индекс — ошибка', async () => {
+      await checkoutScreen.fillShippingInfo(ORDER_DATA.firstName, ORDER_DATA.lastName, '');
+      const errorMessage = await checkoutScreen.getErrorMessage();
+      expect(errorMessage).to.include('Postal Code is required');
+    });
   });
 });

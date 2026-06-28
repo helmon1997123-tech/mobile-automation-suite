@@ -34,28 +34,28 @@ export class BaseScreen {
     }
   }
 
-  async scrollToElement(selector: string): Promise<void> {
-    const element = await $(selector);
-    await element.scrollIntoView();
-  }
-
   async swipeUp(): Promise<void> {
     const { width, height } = await driver.getWindowSize();
     await driver.action('pointer')
-      .move({ duration: 0, x: Math.round(width / 2), y: Math.round(height * 0.8) })
-      .down({ button: 0 })
-      .move({ duration: 500, x: Math.round(width / 2), y: Math.round(height * 0.2) })
-      .up({ button: 0 })
-      .perform();
+        .move({ duration: 0, x: Math.round(width / 2), y: Math.round(height * 0.8) })
+        .down({ button: 0 })
+        .move({ duration: 500, x: Math.round(width / 2), y: Math.round(height * 0.2) })
+        .up({ button: 0 })
+        .perform();
   }
 
   async swipeDown(): Promise<void> {
     const { width, height } = await driver.getWindowSize();
     await driver.action('pointer')
-      .move({ duration: 0, x: Math.round(width / 2), y: Math.round(height * 0.2) })
-      .down({ button: 0 })
-      .move({ duration: 500, x: Math.round(width / 2), y: Math.round(height * 0.8) })
-      .up({ button: 0 })
-      .perform();
+        .move({ duration: 0, x: Math.round(width / 2), y: Math.round(height * 0.2) })
+        .down({ button: 0 })
+        .move({ duration: 500, x: Math.round(width / 2), y: Math.round(height * 0.8) })
+        .up({ button: 0 })
+        .perform();
+  }
+
+  async logout(): Promise<void> {
+    await $('~test-Menu').click();
+    await $('~test-LOGOUT').click();
   }
 }
