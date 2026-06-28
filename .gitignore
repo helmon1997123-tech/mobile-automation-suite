@@ -5,5 +5,7 @@ allure-report/
 .env
 apps/*.apk
 apps/*.ipa
+apps/*.zip
+apps/SauceLabs.app/
 .idea/
 test-results/

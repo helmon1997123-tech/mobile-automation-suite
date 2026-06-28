@@ -4,7 +4,7 @@
 ![WebDriverIO](https://img.shields.io/badge/WebDriverIO-8.x-orange)
 ![Appium](https://img.shields.io/badge/Appium-2.x-purple)
 
-Фреймворк мобильной автоматизации для [Sauce Labs Sample App](https://github.com/saucelabs/sample-app-mobile) на Android.
+Фреймворк мобильной автоматизации для [Sauce Labs Sample App](https://github.com/saucelabs/sample-app-mobile) на Android и iOS.
 
 ## Стек
 
@@ -12,8 +12,9 @@
 |---|---|
 | TypeScript | Язык разработки |
 | WebDriverIO 8 | Фреймворк автоматизации |
-| Appium 2 | Мобильная автоматизация (Android) |
+| Appium 2 | Мобильная автоматизация |
 | UiAutomator2 | Android драйвер |
+| XCUITest | iOS драйвер |
 | Allure | Отчёты о прогоне тестов |
 | Chai | Assertions |
 
@@ -31,7 +32,7 @@ mobile-automation-suite/
 
 ├── screens/               # Screen Object Model
 
-│   ├── BaseScreen.ts      # Базовые методы (tap, swipe, scroll, logout)
+│   ├── BaseScreen.ts      # Базовые методы (tap, swipe, logout)
 
 │   ├── LoginScreen.ts
 
@@ -45,9 +46,11 @@ mobile-automation-suite/
 
 │   └── testData.ts        # Тестовые данные и константы
 
-├── apps/                  # APK файлы (не коммитятся)
+├── apps/                  # APK/IPA файлы (не коммитятся)
 
-├── wdio.conf.ts           # Конфиг для Android
+├── wdio.android.conf.ts   # Конфиг для Android
+
+├── wdio.ios.conf.ts       # Конфиг для iOS
 
 ├── wdio.shared.conf.ts    # Общий конфиг
 
@@ -87,14 +90,6 @@ mobile-automation-suite/
 
 ## Запуск
 
-### Требования
-
-- Node.js 20+
-- Android SDK
-- Appium 2.x (`npm install -g appium`)
-- UiAutomator2 драйвер (`appium driver install uiautomator2`)
-- Android эмулятор API 33 или реальное устройство Android 13+
-
 ### Установка
 
 ```bash
@@ -109,18 +104,21 @@ npm install
 cp .env.example .env
 ```
 
-Отредактируй `.env`:
+Отредактируй `.env` под своё устройство.
 
-DEVICE_NAME=emulator-5554        # или серийный номер реального устройства (adb devices)
+---
 
-PLATFORM_VERSION=13.0            # версия Android
+## Android
 
-APP_PATH=./apps/Android.SauceLabs.Mobile.Sample.app.apk
+### Требования
+
+- Appium 2.x (`npm install -g appium`)
+- UiAutomator2 драйвер (`appium driver install uiautomator2`)
+- Эмулятор API 21+ или реальное устройство Android 5.0+
 
 ### Скачай APK
 
 ```bash
-# Sauce Labs Sample App v2.7.1
 wget https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Android.SauceLabs.Mobile.Sample.app.2.7.1.apk \
   -O apps/Android.SauceLabs.Mobile.Sample.app.apk
 ```
@@ -131,20 +129,55 @@ wget https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/Andr
 # Запусти Appium в отдельном терминале
 appium
 
-# Все тесты с отчётом
-npm run test:all
+# Все тесты с отчётом 
+npm run test:android:all
 
-# Только авторизация
-npm run test:login
-
-# Только каталог
-npm run test:catalog
-
-# Корзина и оформление
-npm run test:purchase
+# По отдельности с отчётом
+npm run test:android:login
+npm run test:android:catalog
+npm run test:android:purchase
 ```
 
-### Allure отчёт
+---
+
+## iOS
+
+> ⚠️ Запуск iOS тестов возможен только на macOS с установленным Xcode.
+
+### Требования
+
+- macOS + Xcode
+- Appium 2.x (`npm install -g appium`)
+- XCUITest драйвер (`appium driver install xcuitest`)
+- iOS симулятор или реальное устройство iOS 10.0+
+
+### Скачай IPA
+
+```bash
+# Для симулятора
+wget https://github.com/saucelabs/sample-app-mobile/releases/download/2.7.1/iOS.Simulator.SauceLabs.Mobile.Sample.app.2.7.1.zip \
+  -O apps/iOS.Simulator.SauceLabs.Mobile.Sample.app.zip
+unzip apps/iOS.Simulator.SauceLabs.Mobile.Sample.app.zip -d apps/SauceLabs.app
+```
+
+### Запуск
+
+```bash
+# Запусти Appium в отдельном терминале
+appium
+
+# Все тесты с отчётом
+npm run test:ios:all
+
+# По отдельности с отчётом
+npm run test:ios:login
+npm run test:ios:catalog
+npm run test:ios:purchase
+```
+
+---
+
+## Allure отчёт
 
 ```bash
 npm run report
