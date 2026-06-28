@@ -112,10 +112,11 @@ cp .env.example .env
 
 ### Требования
 
+- Node.js 20+
 - Appium 2.x (`npm install -g appium`)
 - UiAutomator2 драйвер (`appium driver install uiautomator2`)
-- Эмулятор API 21+ или реальное устройство Android 5.0+
-
+- Эмулятор Android API 21+ или реальное устройство с Android 5.0+
+- 
 ### Скачай APK
 
 ```bash
@@ -146,11 +147,12 @@ npm run test:android:purchase
 
 ### Требования
 
+- Node.js 20+
 - macOS + Xcode
 - Appium 2.x (`npm install -g appium`)
 - XCUITest драйвер (`appium driver install xcuitest`)
-- iOS симулятор или реальное устройство iOS 10.0+
-
+- Xcode Simulator с iOS 10.0+
+- 
 ### Скачай IPA
 
 ```bash
